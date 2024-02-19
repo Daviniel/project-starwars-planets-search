@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import FetchApi from '../services/FetchApi';
 
 const DataContext = createContext();
 
@@ -12,7 +13,7 @@ const DataProvider = ({ children }) => {
 
     const fetchData = async () => {
       try {
-        const response = await fetch('https://star-api-wars.herokuapp.com/');
+        const response = await FetchApi('https://star-api-wars.herokuapp.com/');
 
         if (!isMounted) return;
 
