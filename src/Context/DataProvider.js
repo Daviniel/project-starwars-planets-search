@@ -7,6 +7,7 @@ const DataProvider = ({ children }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filterByNumericValues, setFilterByNumericValues] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -23,8 +24,8 @@ const DataProvider = ({ children }) => {
       } catch (error) {
         if (!isMounted) return;
 
-        console.error('Erro ao buscar dados da API', error);
-        setError('Erro ao buscar dados da API');
+        console.error('Erro ao buscar dados da API:', error);
+        setError('Erro ao buscar dados da API. xD');
         setLoading(false);
       }
     };
@@ -45,7 +46,7 @@ const DataProvider = ({ children }) => {
   }
 
   return (
-    <DataContext.Provider value={{ data }}>
+    <DataContext.Provider value={{ data, filterByNumericValues, setFilterByNumericValues }}>
       {children}
     </DataContext.Provider>
   );
