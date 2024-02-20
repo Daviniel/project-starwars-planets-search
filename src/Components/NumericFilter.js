@@ -1,41 +1,52 @@
 import React, { useState, useContext } from 'react';
-import { DataContext } from '../Context/DataProvider';
+import { DataContext } from '../caminho/para/DataProvider';
 
 const NumericFilter = () => {
-  const { data, setFilterByNumericValues } = useContext(DataContext);
+  const { filterByNumericValues, setFilterByNumericValues } = useContext(DataContext);
 
-  const [selectedColumn, setSelectedColumn] = useState('');
-  const [selectedComparison, setSelectedComparison] = useState('');
-  const [selectedValue, setSelectedValue] = useState('');
+  const initialFilter = {
+    column: '',
+    comparison: '',
+    value: '',
+  };
+
+  const [currentFilter, setCurrentFilter] = useState({ ...initialFilter });
 
   const handleColumnChange = (event) => {
-    setSelectedColumn(event.target.value);
+    setCurrentFilter({ ...currentFilter, column: event.target.value });
   };
 
   const handleComparisonChange = (event) => {
-    setSelectedComparison(event.target.value);
+    setCurrentFilter({ ...currentFilter, comparison: event.target.value });
   };
 
   const handleValueChange = (event) => {
-    setSelectedValue(event.target.value);
+    setCurrentFilter({ ...currentFilter, value: event.target.value });
   };
 
-  const handleFilter = () => {
-    if (selectedColumn && selectedComparison && selectedValue) {
-      setFilterByNumericValues([
-        ...data.filterByNumericValues,
-        {
-          column: selectedColumn,
-          comparison: selectedComparison,
-          value: selectedValue,
-        },
-      ]);
+  const handleAddFilter = () => {
+    if (currentFilter.column && currentFilter.comparison && currentFilter.value !== '') {
+      setFilterByNumericValues([...filterByNumericValues, { ...currentFilter }]);
+      setCurrentFilter({ ...initialFilter });
     }
+  };
+
+  const handleRemoveFilter = (index) => {
+    const updatedFilters = [...filterByNumericValues];
+    updatedFilters.splice(index, 1);
+    setFilterByNumericValues(updatedFilters);
   };
 
   return (
     <div>
-      <select value={selectedColumn} onChange={handleColumnChange} data-testid="column-filter">
+      {filterByNumericValues.map((filter, index) => (
+        <div key={index}>
+          {`Filtro ${index + 1}: ${filter.column} ${filter.comparison} ${filter.value}`}
+          <button onClick={() => handleRemoveFilter(index)}>Remover</button>
+        </div>
+      ))}
+
+      <select value={currentFilter.column} onChange={handleColumnChange} data-testid="column-filter">
         <option value="">Selecione a Coluna</option>
         <option value="population">Population</option>
         <option value="orbital_period">Orbital Period</option>
@@ -44,7 +55,7 @@ const NumericFilter = () => {
         <option value="surface_water">Surface Water</option>
       </select>
 
-      <select value={selectedComparison} onChange={handleComparisonChange} data-testid="comparison-filter">
+      <select value={currentFilter.comparison} onChange={handleComparisonChange} data-testid="comparison-filter">
         <option value="">Selecione a Comparação</option>
         <option value="maior que">Maior que</option>
         <option value="menor que">Menor que</option>
@@ -53,14 +64,14 @@ const NumericFilter = () => {
 
       <input
         type="number"
-        value={selectedValue}
+        value={currentFilter.value}
         onChange={handleValueChange}
         placeholder="Digite um valor"
         data-testid="value-filter"
       />
 
-      <button onClick={handleFilter} data-testid="button-filter">
-        Filtrar
+      <button onClick={handleAddFilter} data-testid="button-filter">
+        Adicionar Filtro
       </button>
     </div>
   );
