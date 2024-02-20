@@ -41,11 +41,26 @@ const NumericFilter = () => {
     }
   };
 
+  const handleRemoveFilter = (index) => {
+    const removedColumn = filterByNumericValues[index].column;
+    const updatedFilters = filterByNumericValues.filter((_, i) => i !== index);
+    setFilterByNumericValues(updatedFilters);
+
+    // Adiciona a coluna removida de volta às colunas disponíveis
+    setAvailableColumns([...availableColumns, removedColumn]);
+  };
+
+  const handleRemoveAllFilters = () => {
+    setFilterByNumericValues([]);
+    setAvailableColumns(['population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water']);
+  };
+
   return (
     <div>
       {filterByNumericValues.map((filter, index) => (
-        <div key={index}>
+        <div key={index} data-testid="filter">
           {`Filtro ${index + 1}: ${filter.column} ${filter.comparison} ${filter.value}`}
+          <button onClick={() => handleRemoveFilter(index)}>X</button>
         </div>
       ))}
 
@@ -75,6 +90,10 @@ const NumericFilter = () => {
 
       <button onClick={handleAddFilter} data-testid="button-filter">
         Adicionar Filtro
+      </button>
+
+      <button onClick={handleRemoveAllFilters} data-testid="button-remove-filters">
+        Remover todas filtragens
       </button>
     </div>
   );
