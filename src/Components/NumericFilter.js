@@ -1,8 +1,18 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { DataContext } from '../caminho/para/DataProvider';
 
 const NumericFilter = () => {
   const { filterByNumericValues, setFilterByNumericValues } = useContext(DataContext);
+  const [availableColumns, setAvailableColumns] = useState([]);
+
+  useEffect(() => {
+    const usedColumns = filterByNumericValues.map((filter) => filter.column);
+    const newAvailableColumns = ['population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water'].filter(
+      (column) => !usedColumns.includes(column)
+    );
+
+    setAvailableColumns(newAvailableColumns);
+  }, [filterByNumericValues]);
 
   const initialFilter = {
     column: '',
@@ -31,28 +41,21 @@ const NumericFilter = () => {
     }
   };
 
-  const handleRemoveFilter = (index) => {
-    const updatedFilters = [...filterByNumericValues];
-    updatedFilters.splice(index, 1);
-    setFilterByNumericValues(updatedFilters);
-  };
-
   return (
     <div>
       {filterByNumericValues.map((filter, index) => (
         <div key={index}>
           {`Filtro ${index + 1}: ${filter.column} ${filter.comparison} ${filter.value}`}
-          <button onClick={() => handleRemoveFilter(index)}>Remover</button>
         </div>
       ))}
 
       <select value={currentFilter.column} onChange={handleColumnChange} data-testid="column-filter">
         <option value="">Selecione a Coluna</option>
-        <option value="population">Population</option>
-        <option value="orbital_period">Orbital Period</option>
-        <option value="diameter">Diameter</option>
-        <option value="rotation_period">Rotation Period</option>
-        <option value="surface_water">Surface Water</option>
+        {availableColumns.map((column) => (
+          <option key={column} value={column}>
+            {column}
+          </option>
+        ))}
       </select>
 
       <select value={currentFilter.comparison} onChange={handleComparisonChange} data-testid="comparison-filter">
